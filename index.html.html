@@ -1,0 +1,644 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <base href="./">
+  <title>こころのセルフケアチェック</title>
+
+  <style>
+    :root{
+      /* Soft earth colors (pink + green) */
+      --bg1:#fff1f2;     /* rose-50 */
+      --bg2:#ecfdf5;     /* emerald-50 */
+      --card:#ffffffcc;
+      --text:#1f2937;    /* gray-800 */
+      --muted:#4b5563;   /* gray-600 */
+      --accent:#ec4899;  /* pink-500 */
+      --accent2:#10b981; /* emerald-500 */
+      --border:rgba(31,41,55,.12);
+      --shadow: 0 14px 34px rgba(17,24,39,.10);
+      --radius: 18px;
+      --danger:#ef4444;
+      --ok:#059669;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+                   "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic", "Meiryo", sans-serif;
+      color:var(--text);
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+      background:
+        radial-gradient(900px 700px at 80% -10%, rgba(236,72,153,.20), transparent 60%),
+        radial-gradient(900px 700px at -10% 20%, rgba(16,185,129,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+    }
+
+    .app{
+      width:min(740px, 100%);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      background: rgba(255,255,255,.55);
+      backdrop-filter: blur(6px);
+    }
+
+    header{
+      padding:18px 18px 12px;
+      border-bottom:1px solid var(--border);
+      background: linear-gradient(180deg, rgba(255,255,255,.85), rgba(255,255,255,.45));
+    }
+
+    header .title{
+      margin:0;
+      font-weight:900;
+      letter-spacing:.02em;
+      line-height:1.2;
+      font-size:22px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.7);
+      color: var(--muted);
+      font-size:12px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    header .sub{
+      margin:10px 0 0;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.65;
+    }
+
+    main{ padding:18px; }
+
+    .card{
+      background: var(--card);
+      border:1px solid var(--border);
+      border-radius: var(--radius);
+      padding:16px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius: 999px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.75);
+      color: var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .spacer{ height:12px; }
+
+    .btn{
+      appearance:none;
+      border:none;
+      border-radius: 14px;
+      padding:12px 14px;
+      font-weight:800;
+      color:white;
+      background: linear-gradient(135deg, rgba(236,72,153,.92), rgba(16,185,129,.78));
+      cursor:pointer;
+      width:100%;
+      box-shadow: 0 10px 22px rgba(236,72,153,.16);
+      transition: transform .06s ease, filter .2s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+    .btn.secondary{
+      background: rgba(255,255,255,.78);
+      color: var(--text);
+      border:1px solid var(--border);
+      box-shadow:none;
+    }
+    .btn.ghost{
+      background: transparent;
+      color: var(--muted);
+      border:1px dashed rgba(31,41,55,.25);
+      box-shadow:none;
+    }
+    .btn.danger{
+      background: rgba(239,68,68,.12);
+      color:#991b1b;
+      border:1px solid rgba(239,68,68,.25);
+      box-shadow:none;
+    }
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+      filter:saturate(.8);
+    }
+
+    .grid2{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 640px){
+      .grid2{ grid-template-columns: 1fr 1fr; }
+    }
+
+    .qlead{
+      color: var(--muted);
+      font-size:13px;
+      font-weight:800;
+      line-height:1.6;
+      margin:0;
+    }
+    .qtext{
+      font-size:18px;
+      line-height:1.6;
+      margin:10px 0 0;
+      font-weight:900;
+    }
+
+    .choices{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+    .choice{
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.65);
+      border-radius: 14px;
+      padding:12px 12px;
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      cursor:pointer;
+      transition: background .15s ease, border-color .15s ease;
+      user-select:none;
+    }
+    .choice:hover{ background: rgba(255,255,255,.82); }
+    .choice input{ margin-top:3px; }
+    .choice.selected{
+      border-color: rgba(236,72,153,.45);
+      background: rgba(236,72,153,.10);
+    }
+    .choice .label{
+      font-weight:900;
+      line-height:1.35;
+    }
+
+    .note{
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.7;
+      margin-top:10px;
+    }
+    .err{
+      color: var(--danger);
+      font-weight:900;
+      font-size:13px;
+      margin-top:10px;
+      display:none;
+    }
+
+    .resultBig{
+      font-size:34px;
+      font-weight:950;
+      letter-spacing:.01em;
+      margin:6px 0 0;
+    }
+    .barWrap{
+      margin-top:12px;
+      background: rgba(31,41,55,.08);
+      border:1px solid var(--border);
+      border-radius: 999px;
+      overflow:hidden;
+      height:14px;
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(16,185,129,.85), rgba(236,72,153,.85));
+      border-radius: 999px;
+      transition: width .6s ease;
+    }
+    .levelTag{
+      display:inline-flex;
+      align-items:center;
+      padding:8px 10px;
+      border-radius: 14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.75);
+      font-weight:950;
+      margin-top:10px;
+    }
+    .descBox{
+      margin-top:10px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.65);
+      border-radius: 14px;
+      padding:12px;
+      line-height:1.75;
+      font-weight:750;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app" role="application" aria-label="こころのセルフケアチェック">
+    <header>
+      <p class="title" id="headerTitle">
+        こころのセルフケアチェック
+        <span class="badge">10問・約1分</span>
+      </p>
+      <p class="sub" id="headerSub"></p>
+    </header>
+    <main id="root"></main>
+  </div>
+
+<script>
+/* ========= Data ========= */
+const TEST_TITLE = "こころのセルフケアチェック";
+
+const INTRO_TEXT = "このチェックは、最近のこころの調子やストレスの状態を振り返るためのものです。病気の診断をするものではありません。点数は良し悪しではなく、「今の自分を知るヒント」です。気になる結果が出た場合は、休息をとったり、誰かに話したり、相談窓口を利用するきっかけとして活用してください。";
+
+const NOTE_TEXT = "※このテストは、K6／K10（心理的ストレス尺度）と呼ばれる尺度を参考にして作成されていますが、病気の診断を目的として使用するものではありません。";
+
+const Q_LEAD = "この1か月くらいのあなたの気持ちについておたずねします。";
+
+const QUESTIONS = [
+  "1．とくに理由がないのに、とても疲れていると感じましたか",
+  "2．ちょっとしたことが気になって、敏感になっていると感じましたか",
+  "3．気持ちが落ち着かず、どうしても不安やイライラを感じることがありましたか",
+  "4．先のことを考えると、希望がもてないように感じましたか",
+  "5．そわそわして、気持ちが落ち着かないと感じましたか",
+  "6．じっとしているのがつらいほど、落ち着かないと感じましたか",
+  "7．気分が暗くなり、元気が出ないと感じましたか",
+  "8．気分が沈んでしまい、楽しいことがあっても気分が晴れないと感じましたか",
+  "9．何をするのも大変で、やる気が出ないと感じましたか",
+  "10．自分は役に立っていない、だめな人間だと感じましたか"
+];
+
+const LIKERT = [
+  { v: 0, label: "0：全くない" },
+  { v: 1, label: "1：少しだけ" },
+  { v: 2, label: "2：時々" },
+  { v: 3, label: "3：たいてい" },
+  { v: 4, label: "4：いつも" }
+];
+
+// score → category
+function classify(sum){
+  if (sum <= 9){
+    return {
+      label: "こころの調子は良好な状態",
+      desc: "現在のところ、こころの調子は良好な状態と考えられます。今の生活リズムや対処方法が、あなたに合っている可能性があります。"
+    };
+  }
+  if (sum <= 19){
+    return {
+      label: "こころの疲れが見え始めています",
+      desc: "こころの疲れが少しずつ出てきているサインかもしれません。休息や気分転換の時間を意識してみましょう。"
+    };
+  }
+  if (sum <= 24){
+    return {
+      label: "こころの負担がやや強い状態です",
+      desc: "こころにかかる負担が、やや強くなっている可能性があります。一人で抱え込まず、誰かに相談することも大切です。"
+    };
+  }
+  return {
+    label: "こころのつらさが強い状態が続いている可能性があります",
+    desc: "今回の結果のみで判断はできませんが、心のケアの専門家に相談することを強くおすすめします。"
+  };
+}
+
+/* ========= State ========= */
+const STORAGE_KEY = "kokoro_selfcare_k10_state_v1";
+
+let state = {
+  screen: "home",  // home | info | question | result
+  qIndex: 0,
+  answers: Array(QUESTIONS.length).fill(null),
+  sum: null,
+  percent: null
+};
+
+const root = document.getElementById("root");
+
+function setHeader(title, sub){
+  document.getElementById("headerTitle").textContent = title;
+  document.getElementById("headerSub").textContent = sub || "";
+}
+
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function persist(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+function restore(){
+  try{
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (!s) return;
+    const obj = JSON.parse(s);
+    if (!obj || !Array.isArray(obj.answers) || obj.answers.length !== QUESTIONS.length) return;
+    state = { ...state, ...obj };
+    // 起動時は必ず最初の画面から（要件）
+    state.screen = "home";
+  }catch(e){}
+}
+
+function firstUnansweredIndex(){
+  const i = state.answers.findIndex(v => v === null);
+  return i === -1 ? 0 : i;
+}
+
+function calc(){
+  const sum = state.answers.reduce((acc,v)=> acc + (Number.isFinite(v) ? v : 0), 0);
+  const percent = Math.floor((sum / 40) * 100); // 小数点は除く（切り捨て）
+  return { sum, percent };
+}
+
+/* ========= Render ========= */
+function render(){
+  if (state.screen === "home") return renderHome();
+  if (state.screen === "info") return renderInfo();
+  if (state.screen === "question") return renderQuestion();
+  if (state.screen === "result") return renderResult();
+}
+
+function renderHome(){
+  setHeader(TEST_TITLE, "こころの調子をふり返るセルフチェック（診断ではありません）");
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="pill">やさしいセルフチェック</div>
+      <div class="spacer"></div>
+
+      <p style="margin:0; line-height:1.85; font-weight:700;">
+        ${escapeHtml(INTRO_TEXT)}
+      </p>
+      <p class="note">${escapeHtml(NOTE_TEXT)}</p>
+
+      <div class="spacer"></div>
+
+      <button class="btn" id="startBtn">スタート</button>
+      <div class="spacer"></div>
+      <div class="grid2">
+        <button class="btn secondary" id="continueBtn">途中から続ける</button>
+        <button class="btn ghost" id="infoBtn">説明を読みやすく見る</button>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn danger" id="resetBtn">最初からやり直す（回答を消去）</button>
+      <p class="note">※回答データは端末内にのみ保存されます（サーバー送信しません）。</p>
+    </div>
+  `;
+
+  document.getElementById("startBtn").onclick = () => {
+    state.answers = Array(QUESTIONS.length).fill(null);
+    state.qIndex = 0;
+    state.sum = null;
+    state.percent = null;
+    state.screen = "question";
+    persist();
+    render();
+  };
+
+  document.getElementById("continueBtn").onclick = () => {
+    state.screen = "question";
+    state.qIndex = firstUnansweredIndex();
+    persist();
+    render();
+  };
+
+  document.getElementById("infoBtn").onclick = () => {
+    state.screen = "info";
+    persist();
+    render();
+  };
+
+  document.getElementById("resetBtn").onclick = () => {
+    state = { screen:"home", qIndex:0, answers:Array(QUESTIONS.length).fill(null), sum:null, percent:null };
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    render();
+  };
+}
+
+function renderInfo(){
+  setHeader(TEST_TITLE, "説明");
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="pill">このチェックについて</div>
+      <div class="spacer"></div>
+
+      <p style="margin:0; line-height:1.9; font-weight:750;">
+        ${escapeHtml(INTRO_TEXT)}
+      </p>
+
+      <div class="spacer"></div>
+      <div class="descBox">${escapeHtml(NOTE_TEXT)}</div>
+
+      <div class="spacer"></div>
+      <div class="grid2">
+        <button class="btn" id="toStart">スタート</button>
+        <button class="btn secondary" id="backHome">ホームへ戻る</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById("toStart").onclick = () => {
+    state.answers = Array(QUESTIONS.length).fill(null);
+    state.qIndex = 0;
+    state.sum = null;
+    state.percent = null;
+    state.screen = "question";
+    persist();
+    render();
+  };
+  document.getElementById("backHome").onclick = () => {
+    state.screen = "home";
+    persist();
+    render();
+  };
+}
+
+function renderQuestion(){
+  const qn = state.qIndex + 1;
+  setHeader(`Q${qn} / ${QUESTIONS.length}`, "0〜4のいずれかを1つ選んでください");
+
+  const current = state.answers[state.qIndex];
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="grid2" style="align-items:center;">
+        <div class="pill">Q${qn}</div>
+        <div class="pill">進捗：${qn} / ${QUESTIONS.length}</div>
+      </div>
+
+      <div class="spacer"></div>
+      <p class="qlead">${escapeHtml(Q_LEAD)}</p>
+      <p class="qtext">${escapeHtml(QUESTIONS[state.qIndex])}</p>
+
+      <div class="choices">
+        ${LIKERT.map(opt => `
+          <label class="choice ${current===opt.v ? "selected":""}">
+            <input type="radio" name="likert" value="${opt.v}" ${current===opt.v ? "checked":""} />
+            <div><span class="label">${opt.label}</span></div>
+          </label>
+        `).join("")}
+      </div>
+
+      <div class="err" id="err">※どれか1つ選択してください</div>
+
+      <div class="spacer"></div>
+      <div class="grid2">
+        <button class="btn secondary" id="backBtn" ${state.qIndex===0 ? "disabled":""}>前の設問へ</button>
+        <button class="btn" id="nextBtn">${qn===QUESTIONS.length ? "集計して結果へ" : "つぎの設問へ"}</button>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn danger" id="homeBtn">ホームへ戻る</button>
+    </div>
+  `;
+
+  const radios = root.querySelectorAll('input[name="likert"]');
+  radios.forEach(r => {
+    r.addEventListener("change", () => {
+      state.answers[state.qIndex] = Number(r.value);
+      persist();
+      root.querySelectorAll(".choice").forEach(c => c.classList.remove("selected"));
+      r.closest(".choice").classList.add("selected");
+      document.getElementById("err").style.display = "none";
+    });
+  });
+
+  document.getElementById("backBtn").onclick = () => {
+    if (state.qIndex > 0) state.qIndex -= 1;
+    persist();
+    render();
+  };
+
+  document.getElementById("nextBtn").onclick = () => {
+    const v = state.answers[state.qIndex];
+    if (!Number.isFinite(v)){
+      document.getElementById("err").style.display = "block";
+      return;
+    }
+    if (state.qIndex < QUESTIONS.length - 1){
+      state.qIndex += 1;
+      persist();
+      render();
+    } else {
+      const { sum, percent } = calc();
+      state.sum = sum;
+      state.percent = percent;
+      state.screen = "result";
+      persist();
+      render();
+    }
+  };
+
+  document.getElementById("homeBtn").onclick = () => {
+    state.screen = "home";
+    persist();
+    render();
+  };
+}
+
+function renderResult(){
+  const { sum, percent } = state.sum === null ? calc() : { sum: state.sum, percent: state.percent };
+  const cat = classify(sum);
+
+  setHeader("結果", "合計点と％（0点=0%、40点=100%）を表示します");
+
+  root.innerHTML = `
+    <div class="card">
+      <div class="pill">あなたの結果</div>
+      <div class="spacer"></div>
+
+      <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end; justify-content:space-between;">
+        <div>
+          <div style="font-weight:900; color:var(--muted);">スコア（合計点）</div>
+          <div class="resultBig">${sum}点 / 40点</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-weight:900; color:var(--muted);">100分率</div>
+          <div class="resultBig">${percent}%</div>
+        </div>
+      </div>
+
+      <div class="barWrap" aria-label="パーセントバー">
+        <div class="bar" id="bar"></div>
+      </div>
+
+      <div class="levelTag">こころの健康状態：${escapeHtml(cat.label)}</div>
+      <div class="descBox">${escapeHtml(cat.desc)}</div>
+
+      <p class="note">${escapeHtml(NOTE_TEXT)}</p>
+
+      <div class="spacer"></div>
+      <div class="grid2">
+        <button class="btn secondary" id="continueBtnR">途中から続ける</button>
+        <button class="btn" id="homeBtnR">ホームに戻る</button>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn danger" id="resetBtnR">最初からやり直す（回答を消去）</button>
+    </div>
+  `;
+
+  requestAnimationFrame(() => {
+    const bar = document.getElementById("bar");
+    if (bar) bar.style.width = Math.max(0, Math.min(100, percent)) + "%";
+  });
+
+  document.getElementById("continueBtnR").onclick = () => {
+    state.screen = "question";
+    state.qIndex = firstUnansweredIndex();
+    persist();
+    render();
+  };
+
+  document.getElementById("homeBtnR").onclick = () => {
+    state.screen = "home";
+    persist();
+    render();
+  };
+
+  document.getElementById("resetBtnR").onclick = () => {
+    state = { screen:"home", qIndex:0, answers:Array(QUESTIONS.length).fill(null), sum:null, percent:null };
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+    render();
+  };
+}
+
+/* ========= Boot ========= */
+restore();
+render();
+</script>
+</body>
+</html>
